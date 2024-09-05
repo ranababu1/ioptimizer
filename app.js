@@ -7,7 +7,7 @@ const fs = require('fs');
 const app = express();
 const upload = multer({ dest: '/tmp/' });  // Use /tmp/ for writable file storage
 
-app.use(express.static('public'));
+app.use(express.static('public'));  // Serve static files from 'public'
 
 app.post('/optimize', upload.single('image'), async (req, res) => {
   try {
@@ -41,6 +41,4 @@ app.post('/optimize', upload.single('image'), async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
-  console.log('Server is running on http://localhost:3000');
-});
+// No need for app.listen() on Vercel
