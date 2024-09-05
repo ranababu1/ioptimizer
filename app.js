@@ -18,12 +18,15 @@ app.get('/', (req, res) => {
 app.post('/optimize', upload.single('image'), async (req, res) => {
   try {
     const inputPath = req.file.path;  // The path will now be in /tmp/
-    let originalFileName = path.parse(req.file.originalname).name;
-    originalFileName = originalFileName.substring(0, 6).replace(/[^a-zA-Z0-9]/g, '');
     
+    // Sanitize and trim the original file name to avoid any prefix or suffix issues
+    let originalFileName = path.parse(req.file.originalname).name.trim().substring(0, 6).replace(/[^a-zA-Z0-9]/g, '');
+
     const { fileType, quality, width } = req.body;
     const resolutionLabel = width === '1920' ? '1080p' : width === '1280' ? '720p' : '480p';
-    const outputFileName = `iopt-${originalFileName}-${resolutionLabel}-${quality}.${fileType}`;
+    
+    // Generate the output file name and remove any extra underscores or spaces
+    const outputFileName = `iopt-${originalFileName}-${resolutionLabel}-${quality}.${fileType}`.replace(/_+/g, '-').trim();
     const outputPath = `/tmp/${outputFileName}`;  // Save the output in /tmp/
 
     // Resize and convert the image
