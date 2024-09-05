@@ -1,93 +1,323 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <title>Image Optimizer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
+        rel="stylesheet" />
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
     <style>
         body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
+            background-color: #2c3e50;
+            font-family: Ubuntu, sans-serif;
         }
-        .form-group {
-            margin-bottom: 10px;
+
+        .card-body,
+        .card-container {
+            background-color: #1a252f;
+            border-radius: 5px;
+            color: #eee;
         }
-        #loader {
+
+        .form-control {
+            background-color: #222f3a;
+            color: white;
+            border: 1px solid #1a252f;
+        }
+
+        .btn-custom {
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            margin-top: 15px;
+            padding: 10px 30px;
+        }
+
+        .btn-custom:hover {
+            background-color: #f6f8f9;
+            color: #1a252f;
+        }
+
+        #drop-area {
+            border: 2px dashed #ccc;
+            padding: 50px;
+            margin: 50px;
+            text-align: center;
+            background-color: #222f3a;
+            color: white;
+        }
+
+        #drop-area.hover {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .loader {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 6rem;
             display: none;
+        }
+
+        .loader:before,
+        .loader:after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            animation: pulsOut 1.8s ease-in-out infinite;
+            filter: drop-shadow(0 0 1rem rgba(255, 255, 255, 0.75));
+        }
+
+        .loader:before {
+            width: 100%;
+            padding-bottom: 100%;
+            box-shadow: inset 0 0 0 1rem #fff;
+            animation-name: pulsIn;
+        }
+
+        .loader:after {
+            width: calc(100% - 2rem);
+            padding-bottom: calc(100% - 2rem);
+            box-shadow: 0 0 0 0 #fff;
+        }
+
+        @keyframes pulsIn {
+            0% {
+                box-shadow: inset 0 0 0 1rem #fff;
+                opacity: 1;
+            }
+
+            50%,
+            100% {
+                box-shadow: inset 0 0 0 0 #fff;
+                opacity: 0;
+            }
+        }
+
+        @keyframes pulsOut {
+
+            0%,
+            50% {
+                box-shadow: 0 0 0 0 #fff;
+                opacity: 0;
+            }
+
+            100% {
+                box-shadow: 0 0 0 1rem #fff;
+                opacity: 1;
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #custom-width-container {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+
+        .form-row {
+            align-items: center;
+            padding: 30px 0;
+        }
+
+        input#custom-width {
+            margin-top: 20px
+        }
+
+        .pddn-30 {
+            padding-bottom: 30px;
         }
     </style>
 </head>
+
 <body>
-    <h1>Optimize Your Image</h1>
 
-    <form id="uploadForm" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="image">Select Image:</label>
-            <input type="file" id="image" name="image" required>
+    <div class="container">
+        <div class="card card-container mt-5">
+            <div class="card-body">
+                <h4 class="card-title">Image Optimizer</h4>
+
+                <!-- Drag & Drop and Upload Option -->
+                <div id="drop-area">
+                    <p>Drag & Drop image(s) here</p>
+                    <input type="file" id="image" name="image" multiple>
+                    <label for="image">or click to upload</label>
+                </div>
+
+                <div id="file-names"></div>
+
+                <!-- Output Options in One Row -->
+                <div class="form-row mt-3">
+                    <div class="col-md-3">
+                        <label for="fileType">Output File Type:</label>
+                        <select id="fileType" name="fileType" class="form-control">
+                            <option value="webp">WebP</option>
+                            <option value="png">PNG</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="quality">Output Quality (1-100):</label>
+                        <input type="number" id="quality" name="quality" min="1" max="100" value="80"
+                            class="form-control" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label>Max Width:</label><br>
+                        <label><input type="radio" name="width" value="1920" checked> 1080p</label>
+                        <label><input type="radio" name="width" value="1280"> 720p</label>
+                        <label><input type="radio" name="width" value="custom"> Custom</label>
+
+                    </div>
+                    <div class="col-md-3">
+                        <div id="custom-width-container" style="display: none;">
+                            <input type="number" id="custom-width" class="form-control" placeholder="Width in px"
+                                style="width: 150px; margin-left: 10px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row text-center">
+                <div class="col-md-12 pddn-30">
+                    <button class="btn btn-custom" id="optimize-btn">Optimize Image</button>
+                </div>
+            </div>
         </div>
-
-        <div class="form-group">
-            <label for="fileType">Output File Type:</label>
-            <select id="fileType" name="fileType">
-                <option value="webp">WebP</option>
-                <option value="png">PNG</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="quality">Output Quality (1-100):</label>
-            <input type="number" id="quality" name="quality" min="1" max="100" value="80" required>
-        </div>
-
-        <div class="form-group">
-            <label>Max Width:</label>
-            <label><input type="radio" name="width" value="1920" checked> 1080p (1920px)</label>
-            <label><input type="radio" name="width" value="1280"> 720p (1280px)</label>
-            <label><input type="radio" name="width" value="854"> 480p (854px)</label>
-        </div>
-
-        <button type="submit">Optimize Image</button>
-    </form>
-
-    <div id="loader">
-        <p>Optimizing the images, please wait...</p>
+    </div>
+    <div class="loader"></div>
     </div>
 
     <script>
-        const form = document.getElementById('uploadForm');
-        const loader = document.getElementById('loader');
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('image');
+        const fileNamesDiv = document.getElementById('file-names');
+        const customWidthContainer = document.getElementById('custom-width-container');
+        let droppedFiles = [];
 
-        form.addEventListener('submit', async (e) => {
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        // Highlight the drop area when an image is being dragged
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => dropArea.classList.add('hover'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => dropArea.classList.remove('hover'), false);
+        });
+
+        // Handle dropped files
+        dropArea.addEventListener('drop', handleDrop, false);
+
+        function preventDefaults(e) {
             e.preventDefault();
-            loader.style.display = 'block'; 
-            
-            const formData = new FormData(form);
+            e.stopPropagation();
+        }
 
-            try {
-                const response = await fetch('/optimize', {
-                    method: 'POST',
-                    body: formData
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            droppedFiles = dt.files;
+            fileInput.files = dt.files;  // Assign the dropped files to the file input
+            displayFileNames();
+        }
+
+        function displayFileNames() {
+            fileNamesDiv.innerHTML = '';  // Clear previous names
+            const files = droppedFiles.length > 0 ? droppedFiles : fileInput.files;
+            if (files.length > 0) {
+                Array.from(files).forEach(file => {
+                    const p = document.createElement('p');
+                    p.textContent = file.name;
+                    fileNamesDiv.appendChild(p);
                 });
-
-                if (response.ok) {
-                    const filename = response.headers.get('Content-Disposition').split('filename=')[1]; 
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = filename; 
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                } else {
-                    alert('Error optimizing image');
-                }
-            } catch (error) {
-                alert('An error occurred');
-            } finally {
-                loader.style.display = 'none';  
             }
+        }
+
+        document.getElementById('optimize-btn').addEventListener('click', () => {
+            const formData = new FormData();
+            const files = droppedFiles.length > 0 ? droppedFiles : fileInput.files;
+
+            // Retain the original filename (without extension)
+            const originalFileName = files[0].name.split('.').slice(0, -1).join('.'); // Get the file name without extension
+
+            Array.from(files).forEach(file => formData.append('image', file));
+
+            const fileType = document.getElementById('fileType').value;
+            const quality = document.getElementById('quality').value;
+
+            // Get the selected width (either radio or custom)
+            const selectedWidth = document.querySelector('input[name="width"]:checked').value;
+            const customWidth = document.getElementById('custom-width').value;
+
+            const width = selectedWidth === 'custom' && customWidth ? customWidth : selectedWidth;
+
+            formData.append('fileType', fileType);
+            formData.append('quality', quality);
+            formData.append('width', width);
+
+            // Show loader and hide form
+            document.querySelector('.card-container').style.display = 'none';
+            document.querySelector('.loader').style.display = 'block';
+
+            fetch('/optimize', {
+                method: 'POST',
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    return response.blob();
+                }
+                throw new Error('Error optimizing image');
+            }).then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+
+                // Construct the new filename
+                const outputFileName = `${originalFileName}_${width}_${quality}_${fileType}.${fileType}`;
+                a.download = outputFileName;  // Set the download attribute with the new filename
+                a.click();
+            }).catch(err => {
+                console.error(err);
+            }).finally(() => {
+                document.querySelector('.loader').style.display = 'none';
+                document.querySelector('.card-container').style.display = 'block';
+            });
+        });
+
+
+        // Toggle visibility of the custom width input
+        document.querySelectorAll('input[name="width"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                if (this.value === 'custom') {
+                    customWidthContainer.style.display = 'flex';
+                } else {
+                    customWidthContainer.style.display = 'none';
+                }
+            });
         });
     </script>
+
 </body>
+
 </html>
