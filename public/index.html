@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Optimizer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        #loader {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Optimize Your Image</h1>
+
+    <form id="uploadForm" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="image">Select Image:</label>
+            <input type="file" id="image" name="image" required>
+        </div>
+
+        <div class="form-group">
+            <label for="fileType">Output File Type:</label>
+            <select id="fileType" name="fileType">
+                <option value="webp">WebP</option>
+                <option value="png">PNG</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="quality">Output Quality (1-100):</label>
+            <input type="number" id="quality" name="quality" min="1" max="100" value="80" required>
+        </div>
+
+        <div class="form-group">
+            <label>Max Width:</label>
+            <label><input type="radio" name="width" value="1920" checked> 1080p (1920px)</label>
+            <label><input type="radio" name="width" value="1280"> 720p (1280px)</label>
+            <label><input type="radio" name="width" value="854"> 480p (854px)</label>
+        </div>
+
+        <button type="submit">Optimize Image</button>
+    </form>
+
+    <div id="loader">
+        <p>Optimizing the images, please wait...</p>
+    </div>
+
+    <script>
+        const form = document.getElementById('uploadForm');
+        const loader = document.getElementById('loader');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loader.style.display = 'block'; 
+            
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('/optimize', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const filename = response.headers.get('Content-Disposition').split('filename=')[1]; 
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename; 
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                } else {
+                    alert('Error optimizing image');
+                }
+            } catch (error) {
+                alert('An error occurred');
+            } finally {
+                loader.style.display = 'none';  
+            }
+        });
+    </script>
+</body>
+</html>
