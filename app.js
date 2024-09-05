@@ -7,7 +7,13 @@ const fs = require('fs');
 const app = express();
 const upload = multer({ dest: '/tmp/' });  // Use /tmp/ for writable file storage
 
-app.use(express.static('public'));  // Serve static files from 'public'
+// Serve static files from 'public' directory
+app.use(express.static('public'));
+
+// Serve the homepage from 'public/index.html'
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 app.post('/optimize', upload.single('image'), async (req, res) => {
   try {
