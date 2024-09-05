@@ -41,4 +41,5 @@ app.post('/optimize', upload.single('image'), async (req, res) => {
   }
 });
 
-// No need for app.listen() on Vercel
+// Export the app for Vercel to handle it
+module.exports = app;
