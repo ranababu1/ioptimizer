@@ -29,7 +29,7 @@ app.post('/optimize', upload.single('image'), async (req, res) => {
         fs.unlinkSync(inputPath);
         fs.unlinkSync(outputPath);
       });
-    }, 5000);  // 5 seconds delay
+    }, 5000); 
   } catch (error) {
     console.error(error);
     res.status(500).send('Error optimizing image');
