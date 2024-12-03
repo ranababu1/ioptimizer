@@ -17,7 +17,9 @@
             background-color: #2c3e50;
             font-family: Ubuntu, sans-serif;
         }
-
+.card-title{
+    font-size: optional;
+}
         .card-body,
         .card-container {
             background-color: #1a252f;
@@ -158,16 +160,14 @@
             <div class="card-body">
                 <h1 class="card-title">Image Optimizer</h1>
 
-                <!-- Drag & Drop and Upload Option -->
                 <div id="drop-area">
-                    <h2>Drag & drop image(s) here</h2>
+                    <h2>Drag & drop image(s) here</h2></br>
                     <input type="file" id="image" name="image" multiple>
                     <label for="image">or click to upload</label>
                 </div>
 
                 <div id="file-names"></div>
 
-                <!-- Output Options in One Row -->
                 <div class="form-row mt-3">
                     <div class="col-md-3">
                         <label for="fileType">Output File Type:</label>
@@ -182,7 +182,7 @@
                             class="form-control" required>
                     </div>
                     <div class="col-md-3">
-                        <label>Max Width:</label><br>
+                        <label>Output Image Max Width:</label><br>
                         <label><input type="radio" name="width" value="1920" checked> 1080p</label>
                         <label><input type="radio" name="width" value="1280"> 720p</label>
                         <label><input type="radio" name="width" value="custom"> Custom</label>
