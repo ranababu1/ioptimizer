@@ -10,6 +10,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+
 app.post('/optimize', upload.single('image'), async (req, res) => {
   try {
     const inputPath = req.file.path;  
@@ -32,7 +33,7 @@ app.post('/optimize', upload.single('image'), async (req, res) => {
     }, 5000); 
   } catch (error) {
     console.error(error);
-    res.status(500).send('Error optimizing image');
+    res.status(500).send('Error optimizing...');
   }
 });
 
