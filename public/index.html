@@ -126,6 +126,8 @@
             border: 1px solid rgba(148, 163, 184, 0.1);
             border-radius: 1rem;
             padding: 2rem;
+            display: flex;
+            flex-direction: column;
         }
 
         .card h2 {
@@ -324,6 +326,22 @@
             border-radius: 0.5rem;
         }
 
+        .preview-info.size-increase {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .preview-info.size-excellent {
+            color: #22c55e;
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
         /* Button */
         .btn-optimize {
             width: 100%;
@@ -482,21 +500,23 @@
             <div class="card">
                 <h2>Upload Image</h2>
 
-                <div id="drop-area">
-                    <h3>Drag & drop your images here</h3>
-                    <input type="file" id="image" name="image" accept="image/*" multiple>
-                    <label for="image" class="upload-label">Choose Files</label>
-                </div>
-
-                <div id="file-names"></div>
-
                 <!-- Original Preview -->
                 <div class="preview-container" id="originalPreviewContainer">
-                    <h3 style="font-size: 1rem; color: #94a3b8; margin: 1.5rem 0 0.75rem 0;">Original Image</h3>
                     <div class="preview-box-single">
                         <img id="originalPreview" src="" alt="Original">
                         <div class="preview-info" id="originalInfo">-</div>
                     </div>
+                </div>
+
+                <!-- Upload section moves here when image is selected -->
+                <div id="uploadSection">
+                    <div id="drop-area">
+                        <h3>Drag & drop your images here</h3>
+                        <input type="file" id="image" name="image" accept="image/*" multiple>
+                        <label for="image" class="upload-label">Choose Files</label>
+                    </div>
+
+                    <div id="file-names"></div>
                 </div>
             </div>
 
@@ -527,21 +547,23 @@
 
                 <h3 style="font-size: 1.1rem; color: #f1f5f9; margin-bottom: 1.5rem;" id="settingsTitle">Settings</h3>
 
-                <div class="form-group">
-                    <label for="fileType">Output Format</label>
-                    <select id="fileType" name="fileType">
-                        <option value="webp">WebP (Recommended)</option>
-                        <option value="png">PNG</option>
-                        <option value="jpeg">JPEG</option>
-                    </select>
-                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fileType">Output Format</label>
+                        <select id="fileType" name="fileType">
+                            <option value="webp">WebP (Recommended)</option>
+                            <option value="png">PNG</option>
+                            <option value="jpeg">JPEG</option>
+                        </select>
+                    </div>
 
-                <div class="form-group">
-                    <label for="sizeOption">Output Size</label>
-                    <select id="sizeOption" name="sizeOption">
-                        <option value="original">Original Size</option>
-                        <option value="custom">Custom Dimensions</option>
-                    </select>
+                    <div class="form-group">
+                        <label for="sizeOption">Output Size</label>
+                        <select id="sizeOption" name="sizeOption">
+                            <option value="original">Original Size</option>
+                            <option value="custom">Custom Dimensions</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="dimension-inputs" id="dimensionInputs">
@@ -610,6 +632,7 @@
         let droppedFiles = [];
         let currentImage = null;
         let originalAspectRatio = 1;
+        let originalFileSize = 0;
 
         // Prevent default drag behaviors
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -662,6 +685,7 @@
             if (droppedFiles.length === 0) return;
 
             const file = droppedFiles[0];
+            originalFileSize = file.size;
             const reader = new FileReader();
 
             reader.onload = (e) => {
@@ -671,6 +695,10 @@
                     originalAspectRatio = img.width / img.height;
                     originalPreview.src = e.target.result;
                     originalInfo.textContent = `${img.width} × ${img.height} | ${formatFileSize(file.size)}`;
+
+                    // Add spacing to upload section when preview is shown
+                    const uploadSection = document.getElementById('uploadSection');
+                    uploadSection.style.marginTop = '2rem';
 
                     // Show preview containers and hide placeholder
                     originalPreviewContainer.classList.add('active');
@@ -714,7 +742,25 @@
                 if (blob) {
                     const url = URL.createObjectURL(blob);
                     optimizedPreview.src = url;
+
+                    // Update file size with color coding
+                    const optimizedSize = blob.size;
+                    const compressionRatio = optimizedSize / originalFileSize;
+                    const sizeInKB = optimizedSize / 1024;
+
                     optimizedInfo.textContent = `${targetWidth} × ${targetHeight} | ${formatFileSize(blob.size)}`;
+
+                    // Remove existing classes
+                    optimizedInfo.classList.remove('size-increase', 'size-excellent');
+
+                    // Color code based on size
+                    if (optimizedSize > originalFileSize) {
+                        // Size increased - red
+                        optimizedInfo.classList.add('size-increase');
+                    } else if (compressionRatio < 0.5 || sizeInKB < 20) {
+                        // Compressed to under 50% or under 20KB - green
+                        optimizedInfo.classList.add('size-excellent');
+                    }
                 }
             }, mimeType, quality);
         }
