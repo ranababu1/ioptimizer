@@ -5,126 +5,388 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <title>Image Optimizer</title>
+    <title>Image Optimizer - Professional Image Compression Tool</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
         rel="stylesheet" />
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
-    <script
-        src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background-color: #2c3e50;
-            font-family: Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            font-family: 'Inter', sans-serif;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        .card-title {
-            font-size: optional;
+        /* Header */
+        .header {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
-        .card-body,
-        .card-container {
-            background-color: #1a252f;
-            border-radius: 5px;
-            color: #eee;
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .form-control {
-            background-color: #222f3a;
-            color: white;
-            border: 1px solid #1a252f;
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .btn-custom {
-            background-color: #2c3e50;
-            color: white;
-            border: none;
-            margin-top: 15px;
-            padding: 10px 30px;
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            flex-wrap: wrap;
         }
 
-        .btn-custom:hover {
-            background-color: #f6f8f9;
-            color: #1a252f;
+        .nav-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s;
         }
 
-        #drop-area {
-            border: 2px dashed #ccc;
-            padding: 50px;
-            margin: 50px;
+        .nav-links a:hover {
+            color: #3b82f6;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            flex: 1;
+        }
+
+        .hero {
             text-align: center;
-            background-color: #222f3a;
-            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Main Content Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card Styles */
+        .card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #f1f5f9;
+        }
+
+        /* Drop Area */
+        #drop-area {
+            border: 2px dashed rgba(59, 130, 246, 0.5);
+            border-radius: 1rem;
+            padding: 3rem 2rem;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.5);
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
         #drop-area.hover {
-            background-color: #f0f0f0;
-            color: #333;
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
         }
 
+        #drop-area h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: #cbd5e1;
+        }
+
+        #image {
+            display: none;
+        }
+
+        .upload-label {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: transform 0.2s;
+        }
+
+        .upload-label:hover {
+            transform: translateY(-2px);
+        }
+
+        #file-names {
+            margin-top: 1rem;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        #file-names p {
+            padding: 0.5rem;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+
+        select,
+        input[type="number"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 0.5rem;
+            color: #e2e8f0;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        select:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        select option {
+            background: #1e293b;
+            color: #e2e8f0;
+        }
+
+        .dimension-inputs {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .dimension-inputs.active {
+            display: grid;
+        }
+
+        /* Quality Slider */
+        .slider-container {
+            position: relative;
+            margin-top: 1rem;
+        }
+
+        .slider-value {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        /* Image Preview */
+        .preview-container {
+            display: none;
+        }
+
+        .preview-container.active {
+            display: block;
+        }
+
+        #settingsDivider,
+        #settingsTitle {
+            display: none;
+        }
+
+        .preview-box-single {
+            position: relative;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            text-align: center;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preview-box-single img {
+            max-width: 100%;
+            max-height: 450px;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .preview-info {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 0.5rem;
+        }
+
+        /* Button */
+        .btn-optimize {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-optimize:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-optimize:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Loader */
         .loader {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            display: none;
+            z-index: 2000;
+        }
+
+        .loader.active {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 100%;
-            max-width: 6rem;
+        }
+
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
             display: none;
+            z-index: 1999;
         }
 
-        .loader:before,
-        .loader:after {
-            content: "";
-            position: absolute;
+        .loader-overlay.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(59, 130, 246, 0.3);
+            border-top: 4px solid #3b82f6;
             border-radius: 50%;
-            animation: pulsOut 1.8s ease-in-out infinite;
-            filter: drop-shadow(0 0 1rem rgba(255, 255, 255, 0.75));
-        }
-
-        .loader:before {
-            width: 100%;
-            padding-bottom: 100%;
-            box-shadow: inset 0 0 0 1rem #fff;
-            animation-name: pulsIn;
-        }
-
-        .loader:after {
-            width: calc(100% - 2rem);
-            padding-bottom: calc(100% - 2rem);
-            box-shadow: 0 0 0 0 #fff;
-        }
-
-        @keyframes pulsIn {
-            0% {
-                box-shadow: inset 0 0 0 1rem #fff;
-                opacity: 1;
-            }
-
-            50%,
-            100% {
-                box-shadow: inset 0 0 0 0 #fff;
-                opacity: 0;
-            }
-        }
-
-        @keyframes pulsOut {
-
-            0%,
-            50% {
-                box-shadow: 0 0 0 0 #fff;
-                opacity: 0;
-            }
-
-            100% {
-                box-shadow: 0 0 0 1rem #fff;
-                opacity: 1;
-            }
+            animation: spin 1s linear infinite;
         }
 
         @keyframes spin {
@@ -137,98 +399,223 @@
             }
         }
 
-        #custom-width-container {
+        /* Footer */
+        .footer {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+            padding: 2rem 0;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            text-align: center;
+        }
+
+        .footer-links {
             display: flex;
-            align-items: center;
-            margin-top: 5px;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
         }
 
-        .form-row {
-            align-items: center;
-            padding: 30px 0;
+        .footer-links a {
+            color: #64748b;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
         }
 
-        input#custom-width {
-            margin-top: 20px
+        .footer-links a:hover {
+            color: #3b82f6;
         }
 
-        .pddn-30 {
-            padding-bottom: 30px;
+        .footer-credit {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .footer-credit a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-credit a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 
 <body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Image Optimizer</div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#">Web Asset Audit</a></li>
+                    <li><a href="#">Intelligent Image Editor</a></li>
+                    <li><a href="#">Web Crawler</a></li>
+                    <li><a href="#">Sitemap Builder</a></li>
+                    <li><a href="#">Free AB Test Tool</a></li>
+                    <li><a href="#">CookieShield</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
+    <!-- Main Content -->
     <div class="container">
-        <div class="card card-container mt-5">
-            <div class="card-body">
-                <h1 class="card-title">Image Optimizer</h1>
+        <div class="hero">
+            <h1>Professional Image Optimizer</h1>
+            <p>Compress and optimize your images with precision. Client-side processing ensures your images never leave
+                your device.</p>
+        </div>
+
+        <div class="main-grid">
+            <!-- Left: Upload & Original Preview -->
+            <div class="card">
+                <h2>Upload Image</h2>
 
                 <div id="drop-area">
-                    <h2>Drag & drop image(s) here</h2></br>
-                    <input type="file" id="image" name="image" multiple>
-                    <label for="image">or click to upload</label>
+                    <h3>Drag & drop your images here</h3>
+                    <input type="file" id="image" name="image" accept="image/*" multiple>
+                    <label for="image" class="upload-label">Choose Files</label>
                 </div>
 
                 <div id="file-names"></div>
 
-                <div class="form-row mt-3">
-                    <div class="col-md-3">
-                        <label for="fileType">Output File Type:</label>
-                        <select id="fileType" name="fileType" class="form-control">
-                            <option value="webp">WebP</option>
-                            <option value="png">PNG</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="quality">Output Quality (1-100):</label>
-                        <input type="number" id="quality" name="quality" min="1" max="100" value="80"
-                            class="form-control" required>
-                    </div>
-                    <div class="col-md-3">
-                        <label>Output Image Max Width:</label><br>
-                        <label><input type="radio" name="width" value="1920" checked> 1080p</label>
-                        <label><input type="radio" name="width" value="1280"> 720p</label>
-                        <label><input type="radio" name="width" value="custom"> Custom</label>
-
-                    </div>
-                    <div class="col-md-3">
-                        <div id="custom-width-container" style="display: none;">
-                            <input type="number" id="custom-width" class="form-control" placeholder="Width in px"
-                                style="width: 150px; margin-left: 10px;">
-                        </div>
+                <!-- Original Preview -->
+                <div class="preview-container" id="originalPreviewContainer">
+                    <h3 style="font-size: 1rem; color: #94a3b8; margin: 1.5rem 0 0.75rem 0;">Original Image</h3>
+                    <div class="preview-box-single">
+                        <img id="originalPreview" src="" alt="Original">
+                        <div class="preview-info" id="originalInfo">-</div>
                     </div>
                 </div>
             </div>
-            <div class="row text-center">
-                <div class="col-md-12 pddn-30">
-                    <button class="btn btn-custom" id="optimize-btn">Optimize Image</button>
+
+            <!-- Right: Optimized Preview & Controls -->
+            <div class="card">
+                <h2>Optimized Preview</h2>
+
+                <div class="preview-container" id="optimizedPreviewContainer">
+                    <div class="preview-box-single">
+                        <img id="optimizedPreview" src="" alt="Optimized">
+                        <div class="preview-info" id="optimizedInfo">-</div>
+                    </div>
                 </div>
+
+                <div style="text-align: center; color: #64748b; padding: 4rem 2rem;" id="noPreview">
+                    <svg width="100" height="100" viewBox="0 0 100 100" fill="none" style="margin: 0 auto 1rem;">
+                        <rect x="10" y="20" width="80" height="60" rx="4" stroke="currentColor" stroke-width="2"
+                            opacity="0.3" />
+                        <circle cx="35" cy="40" r="8" fill="currentColor" opacity="0.3" />
+                        <path d="M10 65 L35 45 L50 55 L75 35 L90 50 L90 80 L10 80 Z" fill="currentColor"
+                            opacity="0.2" />
+                    </svg>
+                    <p>Upload an image to see the preview</p>
+                </div>
+
+                <hr style="border: none; border-top: 1px solid rgba(148, 163, 184, 0.1); margin: 2rem 0;"
+                    id="settingsDivider">
+
+                <h3 style="font-size: 1.1rem; color: #f1f5f9; margin-bottom: 1.5rem;" id="settingsTitle">Settings</h3>
+
+                <div class="form-group">
+                    <label for="fileType">Output Format</label>
+                    <select id="fileType" name="fileType">
+                        <option value="webp">WebP (Recommended)</option>
+                        <option value="png">PNG</option>
+                        <option value="jpeg">JPEG</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="sizeOption">Output Size</label>
+                    <select id="sizeOption" name="sizeOption">
+                        <option value="original">Original Size</option>
+                        <option value="custom">Custom Dimensions</option>
+                    </select>
+                </div>
+
+                <div class="dimension-inputs" id="dimensionInputs">
+                    <div class="form-group">
+                        <label for="customWidth">Width (px)</label>
+                        <input type="number" id="customWidth" placeholder="e.g., 1920" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="customHeight">Height (auto)</label>
+                        <input type="number" id="customHeight" placeholder="Auto calculated" disabled>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="quality">Quality <span class="slider-value" id="qualityValue">80%</span></label>
+                    <input type="range" id="quality" name="quality" min="1" max="100" value="80">
+                </div>
+
+                <button class="btn-optimize" id="optimize-btn" disabled>Select Images to Start</button>
             </div>
         </div>
     </div>
-    <div class="loader"></div>
+
+    <!-- Loader -->
+    <div class="loader-overlay" id="loaderOverlay"></div>
+    <div class="loader" id="loader">
+        <div class="spinner"></div>
     </div>
 
-    <footer style="text-align: center; padding: 1rem 0; color: #eee; margin-top: 20px;">
-        <a href="https://imrn.dev/?ref=audit_tool">Built by Imran</a>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Documentation</a>
+                <a href="#">Support</a>
+            </div>
+            <div class="footer-credit">
+                Built with ❤️ by <a href="https://imrn.dev/?ref=image_optimizer" target="_blank">Imran</a>
+            </div>
+        </div>
     </footer>
-
 
     <script>
         const dropArea = document.getElementById('drop-area');
         const fileInput = document.getElementById('image');
         const fileNamesDiv = document.getElementById('file-names');
-        const customWidthContainer = document.getElementById('custom-width-container');
+        const sizeOption = document.getElementById('sizeOption');
+        const dimensionInputs = document.getElementById('dimensionInputs');
+        const customWidth = document.getElementById('customWidth');
+        const customHeight = document.getElementById('customHeight');
+        const qualitySlider = document.getElementById('quality');
+        const qualityValue = document.getElementById('qualityValue');
+        const optimizeBtn = document.getElementById('optimize-btn');
+        const originalPreviewContainer = document.getElementById('originalPreviewContainer');
+        const optimizedPreviewContainer = document.getElementById('optimizedPreviewContainer');
+        const noPreview = document.getElementById('noPreview');
+        const originalPreview = document.getElementById('originalPreview');
+        const optimizedPreview = document.getElementById('optimizedPreview');
+        const originalInfo = document.getElementById('originalInfo');
+        const optimizedInfo = document.getElementById('optimizedInfo');
+        const loader = document.getElementById('loader');
+        const loaderOverlay = document.getElementById('loaderOverlay');
+
         let droppedFiles = [];
+        let currentImage = null;
+        let originalAspectRatio = 1;
 
         // Prevent default drag behaviors
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropArea.addEventListener(eventName, preventDefaults, false);
         });
 
-        // Highlight the drop area when an image is being dragged
         ['dragenter', 'dragover'].forEach(eventName => {
             dropArea.addEventListener(eventName, () => dropArea.classList.add('hover'), false);
         });
@@ -237,7 +624,6 @@
             dropArea.addEventListener(eventName, () => dropArea.classList.remove('hover'), false);
         });
 
-        // Handle dropped files
         dropArea.addEventListener('drop', handleDrop, false);
 
         function preventDefaults(e) {
@@ -247,54 +633,139 @@
 
         function handleDrop(e) {
             const dt = e.dataTransfer;
-            droppedFiles = dt.files;
-            fileInput.files = dt.files;  // Assign the dropped files to the file input
+            droppedFiles = Array.from(dt.files);
+            fileInput.files = dt.files;
             displayFileNames();
+            loadPreview();
         }
+
+        fileInput.addEventListener('change', () => {
+            droppedFiles = Array.from(fileInput.files);
+            displayFileNames();
+            loadPreview();
+        });
 
         function displayFileNames() {
-            fileNamesDiv.innerHTML = '';  // Clear previous names
-            const files = droppedFiles.length > 0 ? droppedFiles : fileInput.files;
-            if (files.length > 0) {
-                Array.from(files).forEach(file => {
+            fileNamesDiv.innerHTML = '';
+            if (droppedFiles.length > 0) {
+                droppedFiles.forEach(file => {
                     const p = document.createElement('p');
-                    p.textContent = file.name;
+                    p.textContent = `📄 ${file.name} (${formatFileSize(file.size)})`;
                     fileNamesDiv.appendChild(p);
                 });
+                optimizeBtn.disabled = false;
+                optimizeBtn.textContent = droppedFiles.length === 1 ? 'Optimize Image' : `Optimize ${droppedFiles.length} Images`;
             }
         }
 
-        document.getElementById('optimize-btn').addEventListener('click', async () => {
-            const files = droppedFiles.length > 0 ? droppedFiles : fileInput.files;
+        function loadPreview() {
+            if (droppedFiles.length === 0) return;
 
-            if (files.length === 0) {
-                alert('Please select at least one image');
-                return;
-            }
+            const file = droppedFiles[0];
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    currentImage = img;
+                    originalAspectRatio = img.width / img.height;
+                    originalPreview.src = e.target.result;
+                    originalInfo.textContent = `${img.width} × ${img.height} | ${formatFileSize(file.size)}`;
+
+                    // Show preview containers and hide placeholder
+                    originalPreviewContainer.classList.add('active');
+                    optimizedPreviewContainer.classList.add('active');
+                    noPreview.style.display = 'none';
+                    document.getElementById('settingsDivider').style.display = 'block';
+                    document.getElementById('settingsTitle').style.display = 'block';
+
+                    updateOptimizedPreview();
+                };
+                img.src = e.target.result;
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        async function updateOptimizedPreview() {
+            if (!currentImage) return;
 
             const fileType = document.getElementById('fileType').value;
-            const quality = parseInt(document.getElementById('quality').value) / 100;
-            const selectedWidth = document.querySelector('input[name="width"]:checked').value;
-            const customWidth = document.getElementById('custom-width').value;
-            const width = selectedWidth === 'custom' && customWidth ? parseInt(customWidth) : parseInt(selectedWidth);
+            const quality = parseInt(qualitySlider.value) / 100;
+            const sizeOpt = sizeOption.value;
 
-            // Show loader and hide form
-            document.querySelector('.card-container').style.display = 'none';
-            document.querySelector('.loader').style.display = 'block';
+            let targetWidth = currentImage.width;
+            let targetHeight = currentImage.height;
+
+            if (sizeOpt === 'custom' && customWidth.value) {
+                targetWidth = parseInt(customWidth.value);
+                targetHeight = Math.round(targetWidth / originalAspectRatio);
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(currentImage, 0, 0, targetWidth, targetHeight);
+
+            const mimeType = fileType === 'webp' ? 'image/webp' : fileType === 'png' ? 'image/png' : 'image/jpeg';
+
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    const url = URL.createObjectURL(blob);
+                    optimizedPreview.src = url;
+                    optimizedInfo.textContent = `${targetWidth} × ${targetHeight} | ${formatFileSize(blob.size)}`;
+                }
+            }, mimeType, quality);
+        }
+
+        // Size option change
+        sizeOption.addEventListener('change', () => {
+            if (sizeOption.value === 'custom') {
+                dimensionInputs.classList.add('active');
+            } else {
+                dimensionInputs.classList.remove('active');
+            }
+            updateOptimizedPreview();
+        });
+
+        // Custom width change
+        customWidth.addEventListener('input', () => {
+            if (customWidth.value && originalAspectRatio) {
+                const height = Math.round(parseInt(customWidth.value) / originalAspectRatio);
+                customHeight.value = height;
+                updateOptimizedPreview();
+            }
+        });
+
+        // Quality slider
+        qualitySlider.addEventListener('input', () => {
+            qualityValue.textContent = `${qualitySlider.value}%`;
+            updateOptimizedPreview();
+        });
+
+        // Optimize button
+        optimizeBtn.addEventListener('click', async () => {
+            if (droppedFiles.length === 0) return;
+
+            const fileType = document.getElementById('fileType').value;
+            const quality = parseInt(qualitySlider.value) / 100;
+            const sizeOpt = sizeOption.value;
+
+            loader.classList.add('active');
+            loaderOverlay.classList.add('active');
 
             try {
-                if (files.length === 1) {
-                    // Single file processing
-                    const optimizedFile = await optimizeImage(files[0], width, quality, fileType);
-                    downloadFile(optimizedFile, generateFileName(files[0].name, width, quality, fileType));
+                if (droppedFiles.length === 1) {
+                    const optimizedFile = await optimizeImage(droppedFiles[0], sizeOpt, quality, fileType);
+                    downloadFile(optimizedFile, generateFileName(droppedFiles[0].name, fileType));
                 } else {
-                    // Multiple files - create ZIP
                     const zip = new JSZip();
 
-                    for (let i = 0; i < files.length; i++) {
-                        const file = files[i];
-                        const optimizedFile = await optimizeImage(file, width, quality, fileType);
-                        const fileName = generateFileName(file.name, width, quality, fileType);
+                    for (let i = 0; i < droppedFiles.length; i++) {
+                        const file = droppedFiles[i];
+                        const optimizedFile = await optimizeImage(file, sizeOpt, quality, fileType);
+                        const fileName = generateFileName(file.name, fileType);
                         zip.file(fileName, optimizedFile);
                     }
 
@@ -305,13 +776,12 @@
                 console.error('Error optimizing images:', error);
                 alert('Error optimizing images. Please try again.');
             } finally {
-                document.querySelector('.loader').style.display = 'none';
-                document.querySelector('.card-container').style.display = 'block';
+                loader.classList.remove('active');
+                loaderOverlay.classList.remove('active');
             }
         });
 
-        async function optimizeImage(file, width, quality, outputFormat) {
-            // For WebP and PNG, we'll use canvas-based conversion
+        async function optimizeImage(file, sizeOpt, quality, outputFormat) {
             return new Promise(async (resolve, reject) => {
                 try {
                     const img = new Image();
@@ -319,27 +789,23 @@
 
                     reader.onload = async (e) => {
                         img.onload = async () => {
-                            // Calculate new dimensions maintaining aspect ratio
-                            let newWidth = width;
-                            let newHeight = (img.height / img.width) * newWidth;
+                            let targetWidth = img.width;
+                            let targetHeight = img.height;
 
-                            // If original is smaller than target, keep original size
-                            if (img.width < width) {
-                                newWidth = img.width;
-                                newHeight = img.height;
+                            if (sizeOpt === 'custom' && customWidth.value) {
+                                targetWidth = parseInt(customWidth.value);
+                                targetHeight = Math.round(targetWidth * (img.height / img.width));
                             }
 
-                            // Create canvas
                             const canvas = document.createElement('canvas');
-                            canvas.width = newWidth;
-                            canvas.height = newHeight;
+                            canvas.width = targetWidth;
+                            canvas.height = targetHeight;
                             const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
 
-                            // Draw image
-                            ctx.drawImage(img, 0, 0, newWidth, newHeight);
+                            const mimeType = outputFormat === 'webp' ? 'image/webp' :
+                                outputFormat === 'png' ? 'image/png' : 'image/jpeg';
 
-                            // Convert to desired format
-                            const mimeType = outputFormat === 'webp' ? 'image/webp' : 'image/png';
                             canvas.toBlob((blob) => {
                                 if (blob) {
                                     resolve(blob);
@@ -361,11 +827,10 @@
             });
         }
 
-        function generateFileName(originalName, width, quality, fileType) {
-            const baseName = originalName.split('.').slice(0, -1).join('.').trim().substring(0, 6).replace(/[^a-zA-Z0-9]/g, '');
-            const resolutionLabel = width === 1920 ? '1080p' : width === 1280 ? '720p' : `${width}p`;
-            const qualityPercent = Math.round(quality * 100);
-            return `iopt-${baseName}-${resolutionLabel}-${qualityPercent}.${fileType}`.replace(/--+/g, '-').trim();
+        function generateFileName(originalName, fileType) {
+            const baseName = originalName.split('.').slice(0, -1).join('.');
+            const quality = qualitySlider.value;
+            return `${baseName}-optimized-q${quality}.${fileType}`;
         }
 
         function downloadFile(blob, filename) {
@@ -379,19 +844,14 @@
             window.URL.revokeObjectURL(url);
         }
 
-
-        // Toggle visibility of the custom width input
-        document.querySelectorAll('input[name="width"]').forEach(radio => {
-            radio.addEventListener('change', function () {
-                if (this.value === 'custom') {
-                    customWidthContainer.style.display = 'flex';
-                } else {
-                    customWidthContainer.style.display = 'none';
-                }
-            });
-        });
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+        }
     </script>
-
 </body>
 
 </html>
